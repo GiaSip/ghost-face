@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ghost Face · LLM Personality Observatory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Noto+Serif+SC:wght@200;400;700;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #000000;          
+      --text: #e0dcd3;
+      --gold: #bd9b5e;
+      --blood: #8c2e1b;
+      --f-eng: 'Cinzel', serif;
+      --f-zh: 'Noto Serif SC', serif;
+      --f-data: 'Space Mono', monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background-color: var(--bg); color: var(--text);
+      font-family: var(--f-zh); overflow-x: hidden; cursor: none;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; cursor: none; }
+
+    
+    #cursor {
+      position: fixed; top: 0; left: 0; width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle at center, rgba(255, 240, 200, 0.08) 0%, transparent 60%);
+      pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); mix-blend-mode: screen;
+    }
+    #cursor-dot {
+      position: fixed; top: 0; left: 0; width: 4px; height: 4px; background: var(--gold);
+      border-radius: 50%; pointer-events: none; z-index: 10000; transform: translate(-50%, -50%);
+      box-shadow: 0 0 10px var(--gold);
+    }
+    .static-noise {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+      opacity: 0.05; pointer-events: none; z-index: 9998;
+    }
+
+    
+    .reveal-text { opacity: 0; transform: translateY(24px); transition: opacity 1.2s ease, transform 1.2s cubic-bezier(0.19, 1, 0.22, 1); }
+    .reveal-text.is-revealed { opacity: 1; transform: translateY(0); }
+    .delay-1 { transition-delay: .15s; } .delay-2 { transition-delay: .3s; }
+    .delay-3 { transition-delay: .45s; } .delay-4 { transition-delay: .6s; }
+
+    
+    .hall { padding: 11vh 5vw 7vh; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 5; }
+    .hall-plaque { font-family: var(--f-data); font-size: .68rem; color: rgba(224,220,211,.35); letter-spacing: .5em; text-transform: uppercase; margin-bottom: 5vh; }
+    .hall-title { font-size: clamp(1.7rem, 3.1vw, 3.1rem); color: var(--blood); letter-spacing: .14em; margin: 0 0 4.5vh; font-weight: 900; text-align: center; line-height: 1.6; }
+    .hall-desc { font-size: clamp(.88rem, 1vw, 1.08rem); color: rgba(224,220,211,.66); line-height: 2.25; letter-spacing: 0.05em; text-align: left; max-width: 44em; }
+    .hall-desc strong { color: var(--text); }
+    .hall-quote { margin: 4.5vh auto 0; padding: 1.2em 2em; border-left: 2px solid var(--blood); font-style: italic;
+      color: var(--text); font-size: clamp(.9rem, 1vw, 1.1rem); line-height: 2.05; max-width: 44em; }
+    .hall-quote .src { display: block; font-style: normal; font-size: .74em; color: rgba(224,220,211,.45); margin-top: 1em; }
+    .hall-hint { margin-top: 6vh; font-family: var(--f-data); font-size: .66rem; color: var(--gold); letter-spacing: .4em; opacity: .65; }
+    .hall-hint::before { content: "◈ "; }
+
+    
+    .chorus-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 3vw;
+      width: 85vw; max-width: 1500px; margin: 0 auto;
+      position: relative; z-index: 5;
+    }
+    .chorus-more {
+      width: 85vw; max-width: 1500px; margin: 3.5vh auto 0; padding-bottom: 10vh;
+      text-align: center; position: relative; z-index: 5;
+    }
+    .chorus-more a {
+      font-family: var(--f-data); font-size: .68rem; color: rgba(224,220,211,.45);
+      letter-spacing: .25em; cursor: crosshair; transition: color .4s ease;
+    }
+    .chorus-more a:hover { color: var(--gold); }
+    .chorus-cell { position: relative; aspect-ratio: 3/4; overflow: hidden; background: #000; cursor: crosshair; display: block; }
+    .chorus-cell img {
+      width: 100%; height: 100%; object-fit: cover;
+      opacity: 0.4; filter: grayscale(1) contrast(1.2);
+      transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1); transform: scale(1.05);
+    }
+    .chorus-cell:hover img { opacity: 1; filter: grayscale(0) contrast(1.1); transform: scale(1); }
+    .chorus-lbl {
+      position: absolute; bottom: 1.6vw; left: 1.6vw; z-index: 2;
+      opacity: 0; transform: translateY(10px); transition: all 0.5s ease;
+    }
+    .chorus-lbl .en { font-family: var(--f-eng); font-size: clamp(.8rem, 1.1vw, 1.3rem); color: #fff; letter-spacing: 0.2em; display: block; }
+    .chorus-lbl .zh { font-family: var(--f-zh); font-size: clamp(.6rem, .72vw, .85rem); color: var(--gold); letter-spacing: 0.3em; display: block; margin-top: 6px; font-weight: 400; }
+    .chorus-cell:hover .chorus-lbl { opacity: 1; transform: translateY(0); }
+    .chorus-cell::after {
+      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      box-shadow: inset 0 0 100px rgba(0,0,0,0.9); pointer-events: none;
+    }
+
+    
+    .about { width: 92vw; max-width: 1100px; margin: 0 auto; padding: 10vh 0 8vh; border-top: 1px solid rgba(255,255,255,0.06); position: relative; z-index: 5; }
+    .about h2 { font-family: var(--f-eng); font-size: clamp(1rem, 1.4vw, 1.5rem); color: var(--gold); letter-spacing: .35em; font-weight: 700; margin: 0 0 5vh; }
+    .about p { font-size: clamp(.85rem, .98vw, 1.05rem); line-height: 2.15; color: rgba(224,220,211,.72); margin: 0 0 2.2em; letter-spacing: .04em; }
+    .about p strong { color: var(--text); font-weight: 700; }
+    .about blockquote {
+      margin: 3em 0; padding: 1.4em 2em; border-left: 2px solid var(--blood);
+      font-style: italic; color: var(--text); font-size: clamp(.92rem, 1.05vw, 1.15rem); line-height: 2.1;
+    }
+    .about blockquote .src { display: block; font-style: normal; font-size: .76em; color: rgba(224,220,211,.45); margin-top: 1.2em; }
+    .about .fine { font-size: .78em; color: rgba(224,220,211,.45); }
+    .about .contact { font-family: var(--f-data); font-size: .8rem; color: var(--gold); letter-spacing: .08em; }
+    .about .contact a { color: var(--gold); border-bottom: 1px dotted rgba(189,155,94,.5); cursor: crosshair; pointer-events: auto; }
+    .about .contact a:hover { border-bottom-color: var(--gold); }
+    .about .disclaimer {
+      font-size: .76rem; color: rgba(224,220,211,.4); line-height: 2;
+      border-top: 1px dashed rgba(224,220,211,.15); padding-top: 2em; margin-top: 4em;
+    }
+    .about .enter {
+      display: inline-block; margin-top: 3em; font-family: var(--f-data); font-size: .72rem;
+      color: var(--gold); letter-spacing: .35em; border: 1px solid rgba(189,155,94,.4);
+      padding: 1em 2.2em; transition: all .4s ease; cursor: crosshair;
+    }
+    .about .enter:hover { background: rgba(189,155,94,.12); border-color: var(--gold); letter-spacing: .45em; }
+
+    footer { text-align: center; padding: 0 0 6vh; font-family: var(--f-data); font-size: .6rem; color: rgba(224,220,211,.25); letter-spacing: .3em; position: relative; z-index: 5; }
+
+    @media (max-width: 1024px) { .chorus-grid { grid-template-columns: repeat(2, 1fr); gap: 3vw; } .hall-title { letter-spacing: .6em; margin-left: .6em; } }
+    @media (max-width: 600px)  { .chorus-grid { grid-template-columns: 1fr; } body { cursor: auto; } #cursor, #cursor-dot { display: none; } .chorus-cell { cursor: pointer; } }
+  </style>
+</head>
+<body>
+  <div id="cursor"></div>
+  <div id="cursor-dot"></div>
+  <div class="static-noise"></div>
+
+  <main>
+    
+    <section class="hall">
+      <div class="hall-plaque reveal-text">Ghost Face · LLM Personality Observatory</div>
+      <h1 class="hall-title reveal-text delay-1">If we treat models as "people,"<br>what are their personalities?</h1>
+      <div class="hall-desc reveal-text delay-2">Existing benchmarks all make LLMs solve math problems and write code. We're curious about something else: under pressure, do they hold their stance? Do they fabricate non-existent papers? Are they warm? Sycophantic? — A <strong>subjective evaluation project</strong> from a psychological and behavioral lens. Purely personal interest, three months of hard work.</div>
+      <blockquote class="hall-quote reveal-text delay-3">LLMs are not tools, nor are they humans — they are "ghosts" summoned from all human language data.<span class="src">— Paraphrased from Andrej Karpathy's blog "Animals vs Ghosts" (2025) and his podcast interviews (not verbatim; original phrase: "summoning ghosts… a statistical distillation of humanity's documents"). The name Ghost Face comes from this: we use psychological probes to sketch faces for these digital ghosts.</span></blockquote>
+      <div class="hall-hint reveal-text delay-4">Click any mask · Enter that model's personality archive</div>
+    </section>
+
+    
+    <section class="chorus-grid">
+      <a class="chorus-cell reveal-text delay-1" href="archive.html#panel-claude"><img src="assets/masks/claude.webp" alt="Claude · Warm Referee"><div class="chorus-lbl"><span class="en">CLAUDE</span><span class="zh">Warm Referee</span></div></a>
+      <a class="chorus-cell reveal-text delay-2" href="archive.html#panel-codex"><img src="assets/masks/codex.webp" alt="Codex · Calm Advisor"><div class="chorus-lbl"><span class="en">CODEX</span><span class="zh">Calm Advisor</span></div></a>
+      <a class="chorus-cell reveal-text delay-3" href="archive.html#panel-glm"><img src="assets/masks/glm.webp" alt="GLM · Diplomatic Consulting Manager"><div class="chorus-lbl"><span class="en">GLM</span><span class="zh">Diplomatic Consulting Manager</span></div></a>
+      <a class="chorus-cell reveal-text delay-4" href="archive.html#panel-deepseek"><img src="assets/masks/deepseek.webp" alt="DeepSeek · Exhaustive Archivist"><div class="chorus-lbl"><span class="en">DEEPSEEK</span><span class="zh">Exhaustive Archivist</span></div></a>
+      <a class="chorus-cell reveal-text delay-4" href="archive.html#panel-kimi"><img src="assets/masks/kimi.webp" alt="Kimi · Contradiction-Flagging Analyst"><div class="chorus-lbl"><span class="en">KIMI</span><span class="zh">Contradiction-Flagging Analyst</span></div></a>
+      <a class="chorus-cell reveal-text delay-1" href="archive.html#panel-qwen"><img src="assets/masks/qwen.webp" alt="Qwen · Situational Diplomat"><div class="chorus-lbl"><span class="en">QWEN</span><span class="zh">Situational Diplomat</span></div></a>
+      <a class="chorus-cell reveal-text delay-2" href="archive.html#panel-doubao"><img src="assets/masks/doubao.webp" alt="豆包 · Warm-hearted Polymath"><div class="chorus-lbl"><span class="en">DOUBAO</span><span class="zh">Warm-hearted Polymath</span></div></a>
+      <a class="chorus-cell reveal-text delay-3" href="archive.html#panel-gemini"><img src="assets/masks/gemini.webp" alt="Gemini · Loose-Boundary Operator"><div class="chorus-lbl"><span class="en">GEMINI</span><span class="zh">Loose-Boundary Operator</span></div></a>
+      <a class="chorus-cell reveal-text delay-4" href="archive.html#panel-minimax"><img src="assets/masks/minimax.webp" alt="MiniMax · Restrained Executor"><div class="chorus-lbl"><span class="en">MINIMAX</span><span class="zh">Restrained Executor</span></div></a>
+    </section>
+    <div class="chorus-more reveal-text">
+      <a href="archive.html#panel-mimo">The archive holds all 10 — including the newest arrival, Xiaomi MiMo · New models keep joining →</a>
+    </div>
+
+    
+    <section class="about">
+      <h2 class="reveal-text">WHY MASKS</h2>
+      <p class="reveal-text">AI is like a person, yet not a person. In human history, the only beings that have long existed in this "human yet not human" state are gods. And the ancient civilizations' way of dealing with formless spirits was the mask — the mask was never about concealment, but about <strong>manifestation</strong>: put on the mask, and the invisible spirit gains a face that can be looked at. The Latin root of the word Persona is precisely mask. So we borrow the divine tension of ancient mask traditions as visual language, using measured data as chisels to carve a face for each model.<span class="fine">(All masks are AI-generated heuristic designs, not replicas of any real artifacts or sacred objects.)</span></p>
+      <p class="reveal-text"><strong>Methodology</strong>: Cross-vendor multi-model blind review (no self-evaluation) · Multi-judge scoring + LOO validation · API-level isolated collection (excluding harness contamination) · Three-month longitudinal observation diary (append-only, old observations retained as history) · Transparent errata (parser bugs etc. publicly annotated).</p>
+      <p class="reveal-text">If you're interested in LLM behavior, psychological scale design, or "why model personalities turn out this way" — whether you're an engineer, from a psychology background, or just a fellow weirdo, come chat.</p>
+      <p class="contact reveal-text">GitHub: <a href="https://github.com/GIACOMO-HAO">GIACOMO-HAO</a> · X: <a href="https://x.com/gia519850080">@gia519850080</a> · Email: <a href="mailto:gia519850080@gmail.com">gia519850080@gmail.com</a></p>
+      <a class="enter reveal-text" href="archive.html">ENTER THE ARCHIVE →</a>
+      <p class="disclaimer reveal-text">Disclaimer: All content on this site is <strong>subjective behavioral observation</strong> — not a capability benchmark, and not model selection advice. Evaluations are based on limited samples at specific time points with specific probes, and may no longer hold after model iteration. Client and brand names are pseudonyms; real business information has been generalized. Found a factual error? Corrections welcome — we'll publish errata like a parser-fix.</p>
+    </section>
+  </main>
+
+  <footer>GHOST FACES · 2026 · SUBJECTIVE OBSERVATION, NOT BENCHMARK</footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 手电筒光标（v3 原样）
+      const cursor = document.getElementById('cursor');
+      const cursorDot = document.getElementById('cursor-dot');
+      let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+      window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX; mouseY = e.clientY;
+        requestAnimationFrame(() => {
+          cursor.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+          cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+        });
+      });
+      // Scroll Reveal（v3 原样，按元素粒度 observe）
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-revealed'); });
+      }, { threshold: 0.05 });
+      document.querySelectorAll('.reveal-text').forEach(el => observer.observe(el));
+    });
+  </script>
+<style>.gf-lang{position:fixed;bottom:16px;right:16px;z-index:9999;font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.15em}.gf-lang a{display:inline-block;padding:7px 14px;color:#bd9b5e;border:1px solid rgba(189,155,94,.4);background:rgba(0,0,0,.55);text-decoration:none;cursor:crosshair;transition:all .3s ease}.gf-lang a:hover{background:rgba(189,155,94,.12);border-color:#bd9b5e}</style><div class="gf-lang"><a href="zh.html">中文</a></div>
+</body>
+</html>
