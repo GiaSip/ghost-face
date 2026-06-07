@@ -576,6 +576,32 @@
   #mask-lightbox .lb-arch { position:absolute; right:18px; top:20px; font-family:var(--font-serif); font-size:2rem; font-weight:900;
     color:var(--text-main); writing-mode:vertical-rl; text-orientation:upright; letter-spacing:.08em; mix-blend-mode:screen; opacity:.82; pointer-events:none; }
 
+  
+  .pw-card { min-width: 0; }           
+  .cv-stamp { white-space: normal; }   
+  @media (max-width: 600px) {
+    body { padding: 16px 14px; }
+    .banner-left h1 { font-size: 2.1rem; }
+    .stat-box { padding: 12px 16px; }
+    .model-rail { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .model-rail .model-chip, .model-rail .rail-label { flex: none; }  
+    .panel { padding: 16px 14px; }
+    .details-body { padding: 16px 14px; }
+    .model-panel { grid-template-columns: 1fr; gap: 14px; padding: 18px 16px; }
+    .mp-mask { position: static; max-width: 150px; }
+    .model-title { font-size: 1.6rem; }
+    .obs-log { table-layout: auto; }
+    .obs-log th:nth-child(1), .obs-log td:nth-child(1) { width: auto; white-space: normal; }
+    .obs-log th:nth-child(2), .obs-log td:nth-child(2) { width: auto; }
+    .full-card .card-body { overflow-x: auto; }
+  }
+  
+  @media (hover: none) {
+    .pw-card:hover { transform: none; box-shadow: 6px 6px 0 var(--shadow-void); border-color: var(--frame-dim); }
+    .pw-card:hover .pw-maskimg { transform: none; filter: none; }
+    .view-btn:hover, .model-chip:hover, .tab-btn:hover { transform: none; box-shadow: none; }
+  }
+
 </style>
 </head>
 <body>

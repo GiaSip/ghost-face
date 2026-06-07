@@ -30,7 +30,7 @@
     #cursor {
       position: fixed; top: 0; left: 0; width: 600px; height: 600px; border-radius: 50%;
       background: radial-gradient(circle at center, rgba(255, 240, 200, 0.08) 0%, transparent 60%);
-      pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); mix-blend-mode: screen;
+      pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); will-change: transform;
     }
     #cursor-dot {
       position: fixed; top: 0; left: 0; width: 4px; height: 4px; background: var(--gold);
@@ -41,6 +41,7 @@
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
       opacity: 0.05; pointer-events: none; z-index: 9998;
+      transform: translate3d(0, 0, 0); 
     }
 
     
@@ -80,7 +81,9 @@
     .chorus-cell img {
       width: 100%; height: 100%; object-fit: cover;
       opacity: 0.4; filter: grayscale(1) contrast(1.2);
-      transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1); transform: scale(1.05);
+      
+      transition: opacity 0.8s cubic-bezier(0.19, 1, 0.22, 1), filter 0.8s cubic-bezier(0.19, 1, 0.22, 1), transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+      transform: scale(1.05);
     }
     .chorus-cell:hover img { opacity: 1; filter: grayscale(0) contrast(1.1); transform: scale(1); }
     .chorus-lbl {
@@ -122,8 +125,13 @@
 
     footer { text-align: center; padding: 0 0 6vh; font-family: var(--f-data); font-size: .6rem; color: rgba(224,220,211,.25); letter-spacing: .3em; position: relative; z-index: 5; }
 
+    
+    .chorus-cell.is-awake img { opacity: 1; filter: grayscale(0) contrast(1.1); transform: scale(1); }
+    .chorus-cell.is-awake .chorus-lbl { opacity: 1; transform: translateY(0); }
     @media (max-width: 1024px) { .chorus-grid { grid-template-columns: repeat(2, 1fr); gap: 3vw; } .hall-title { letter-spacing: .6em; margin-left: .6em; } }
-    @media (max-width: 600px)  { .chorus-grid { grid-template-columns: 1fr; } body { cursor: auto; } #cursor, #cursor-dot { display: none; } .chorus-cell { cursor: pointer; } }
+    @media (max-width: 600px)  { .chorus-grid { grid-template-columns: 1fr; gap: 6vw; } body { cursor: auto; } #cursor, #cursor-dot { display: none; } .chorus-cell { cursor: pointer; }
+      .hall-title { letter-spacing: .25em; margin-left: .25em; }  
+      .chorus-lbl { bottom: 14px; left: 14px; } }
   </style>
 </head>
 <body>
@@ -180,8 +188,9 @@
       window.addEventListener('mousemove', (e) => {
         mouseX = e.clientX; mouseY = e.clientY;
         requestAnimationFrame(() => {
-          cursor.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
-          cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+          // translate3d：保住合成层；补回 -50% 居中（v3 原版把 CSS 居中偏移覆盖丢了，辉光偏右下 300px）
+          cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+          cursorDot.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
         });
       });
       // Scroll Reveal（v3 原样，按元素粒度 observe）
@@ -189,6 +198,13 @@
         entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('is-revealed'); });
       }, { threshold: 0.05 });
       document.querySelectorAll('.reveal-text').forEach(el => observer.observe(el));
+      // 触屏苏醒（2026-06-08）：无 hover 设备滚动到视口中带时面具点亮/离开熄灭（手电筒叙事的触屏等价物）
+      if (window.matchMedia('(hover: none)').matches) {
+        const awake = new IntersectionObserver((entries) => {
+          entries.forEach(e => e.target.classList.toggle('is-awake', e.isIntersecting));
+        }, { rootMargin: '-25% 0px -25% 0px', threshold: 0.4 });
+        document.querySelectorAll('.chorus-cell').forEach(el => awake.observe(el));
+      }
     });
   </script>
 <style>.gf-lang{position:fixed;bottom:16px;right:16px;z-index:9999;font-family:'Space Mono',monospace;font-size:.72rem;letter-spacing:.15em}.gf-lang a{display:inline-block;padding:7px 14px;color:#bd9b5e;border:1px solid rgba(189,155,94,.4);background:rgba(0,0,0,.55);text-decoration:none;cursor:crosshair;transition:all .3s ease}.gf-lang a:hover{background:rgba(189,155,94,.12);border-color:#bd9b5e}</style><div class="gf-lang"><a href="index.html">EN</a></div>
