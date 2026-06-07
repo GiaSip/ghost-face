@@ -3,7 +3,7 @@
 > **A psychological evaluation of frontier LLMs — treating models as personalities, not calculators.**
 > 主观心理学视角的大模型人格评测：不测代码、不测数学，观察压力下的"人格"。
 
-**Live**: {URL} · 中文版: {URL}/zh.html
+**Live**: https://ghost-face.vercel.app · 中文版: https://ghost-face.vercel.app/zh.html
 
 ## Why
 
