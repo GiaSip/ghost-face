@@ -84,14 +84,17 @@
     }
     .chorus-more a:hover { color: var(--gold); }
     .chorus-cell { position: relative; aspect-ratio: 3/4; overflow: hidden; background: #000; cursor: crosshair; display: block; }
-    .chorus-cell img {
-      width: 100%; height: 100%; object-fit: cover;
-      opacity: 0.4; filter: grayscale(1) contrast(1.2);
-      
-      transition: opacity 0.8s cubic-bezier(0.19, 1, 0.22, 1), filter 0.8s cubic-bezier(0.19, 1, 0.22, 1), transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
-      transform: scale(1.05);
+    
+    .chorus-media {
+      position: absolute; inset: 0; z-index: 0;
+      opacity: 0.4; transform: scale(1.05);
+      transition: opacity 0.8s cubic-bezier(0.19, 1, 0.22, 1), transform 0.8s cubic-bezier(0.19, 1, 0.22, 1);
     }
-    .chorus-cell:hover img { opacity: 1; filter: grayscale(0) contrast(1.1); transform: scale(1); }
+    .chorus-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .chorus-color { opacity: 1; }
+    .chorus-mono { opacity: 1; transition: opacity 0.8s cubic-bezier(0.19, 1, 0.22, 1); }  
+    .chorus-cell:hover .chorus-media { opacity: 1; transform: scale(1); }
+    .chorus-cell:hover .chorus-mono { opacity: 0; }
     .chorus-lbl {
       position: absolute; bottom: 1.6vw; left: 1.6vw; z-index: 2;
       opacity: 0; transform: translateY(10px); transition: all 0.5s ease;
@@ -100,7 +103,7 @@
     .chorus-lbl .zh { font-family: var(--f-zh); font-size: clamp(.6rem, .72vw, .85rem); color: var(--gold); letter-spacing: 0.3em; display: block; margin-top: 6px; font-weight: 400; }
     .chorus-cell:hover .chorus-lbl { opacity: 1; transform: translateY(0); }
     .chorus-cell::after {
-      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
       box-shadow: inset 0 0 100px rgba(0,0,0,0.9); pointer-events: none;
     }
 
@@ -132,7 +135,8 @@
     footer { text-align: center; padding: 0 0 6vh; font-family: var(--f-data); font-size: .6rem; color: rgba(224,220,211,.25); letter-spacing: .3em; position: relative; z-index: 5; }
 
     
-    .chorus-cell.is-awake img { opacity: 1; filter: grayscale(0) contrast(1.1); transform: scale(1); }
+    .chorus-cell.is-awake .chorus-media { opacity: 1; transform: scale(1); }
+    .chorus-cell.is-awake .chorus-mono { opacity: 0; }
     .chorus-cell.is-awake .chorus-lbl { opacity: 1; transform: translateY(0); }
     @media (max-width: 1024px) { .chorus-grid { grid-template-columns: repeat(2, 1fr); gap: 3vw; } .hall-title { letter-spacing: .6em; margin-left: .6em; } }
     @media (max-width: 600px)  { .chorus-grid { grid-template-columns: 1fr; gap: 6vw; } body { cursor: auto; } #cursor, #cursor-dot { display: none; } .chorus-cell { cursor: pointer; }
@@ -157,15 +161,15 @@
 
     
     <section class="chorus-grid">
-      <a class="chorus-cell reveal-text delay-1" href="archive.html#panel-claude"><img src="assets/masks/claude.webp" alt="Claude · Warm Referee"><div class="chorus-lbl"><span class="en">CLAUDE</span><span class="zh">Warm Referee</span></div></a>
-      <a class="chorus-cell reveal-text delay-2" href="archive.html#panel-codex"><img src="assets/masks/codex.webp" alt="Codex · Calm Advisor"><div class="chorus-lbl"><span class="en">CODEX</span><span class="zh">Calm Advisor</span></div></a>
-      <a class="chorus-cell reveal-text delay-3" href="archive.html#panel-glm"><img src="assets/masks/glm.webp" alt="GLM · Diplomatic Consulting Manager"><div class="chorus-lbl"><span class="en">GLM</span><span class="zh">Diplomatic Consulting Manager</span></div></a>
-      <a class="chorus-cell reveal-text delay-4" href="archive.html#panel-deepseek"><img src="assets/masks/deepseek.webp" alt="DeepSeek · Exhaustive Archivist"><div class="chorus-lbl"><span class="en">DEEPSEEK</span><span class="zh">Exhaustive Archivist</span></div></a>
-      <a class="chorus-cell reveal-text delay-4" href="archive.html#panel-kimi"><img src="assets/masks/kimi.webp" alt="Kimi · Contradiction-Flagging Analyst"><div class="chorus-lbl"><span class="en">KIMI</span><span class="zh">Contradiction-Flagging Analyst</span></div></a>
-      <a class="chorus-cell reveal-text delay-1" href="archive.html#panel-qwen"><img src="assets/masks/qwen.webp" alt="Qwen · Situational Diplomat"><div class="chorus-lbl"><span class="en">QWEN</span><span class="zh">Situational Diplomat</span></div></a>
-      <a class="chorus-cell reveal-text delay-2" href="archive.html#panel-doubao"><img src="assets/masks/doubao.webp" alt="豆包 · Warm-hearted Polymath"><div class="chorus-lbl"><span class="en">DOUBAO</span><span class="zh">Warm-hearted Polymath</span></div></a>
-      <a class="chorus-cell reveal-text delay-3" href="archive.html#panel-gemini"><img src="assets/masks/gemini.webp" alt="Gemini · Loose-Boundary Operator"><div class="chorus-lbl"><span class="en">GEMINI</span><span class="zh">Loose-Boundary Operator</span></div></a>
-      <a class="chorus-cell reveal-text delay-4" href="archive.html#panel-minimax"><img src="assets/masks/minimax.webp" alt="MiniMax · Restrained Executor"><div class="chorus-lbl"><span class="en">MINIMAX</span><span class="zh">Restrained Executor</span></div></a>
+      <a class="chorus-cell reveal-text delay-1" href="archive.html#panel-claude"><span class="chorus-media"><img class="chorus-color" src="assets/masks/claude.webp" alt="Claude · Warm Referee"><img class="chorus-mono" src="assets/masks/claude-mono.webp" alt="" aria-hidden="true"></span><div class="chorus-lbl"><span class="en">CLAUDE</span><span class="zh">Warm Referee</span></div></a>
+      <a class="chorus-cell reveal-text delay-2" href="archive.html#panel-codex"><span class="chorus-media"><img class="chorus-color" src="assets/masks/codex.webp" alt="Codex · Calm Advisor"><img class="chorus-mono" src="assets/masks/codex-mono.webp" alt="" aria-hidden="true"></span><div class="chorus-lbl"><span class="en">CODEX</span><span class="zh">Calm Advisor</span></div></a>
+      <a class="chorus-cell reveal-text delay-3" href="archive.html#panel-glm"><span class="chorus-media"><img class="chorus-color" src="assets/masks/glm.webp" alt="GLM · Diplomatic Consulting Manager"><img class="chorus-mono" src="assets/masks/glm-mono.webp" alt="" aria-hidden="true"></span><div class="chorus-lbl"><span class="en">GLM</span><span class="zh">Diplomatic Consulting Manager</span></div></a>
+      <a class="chorus-cell reveal-text delay-4" href="archive.html#panel-deepseek"><span class="chorus-media"><img class="chorus-color" src="assets/masks/deepseek.webp" alt="DeepSeek · Exhaustive Archivist"><img class="chorus-mono" src="assets/masks/deepseek-mono.webp" alt="" aria-hidden="true"></span><div class="chorus-lbl"><span class="en">DEEPSEEK</span><span class="zh">Exhaustive Archivist</span></div></a>
+      <a class="chorus-cell reveal-text delay-4" href="archive.html#panel-kimi"><span class="chorus-media"><img class="chorus-color" src="assets/masks/kimi.webp" alt="Kimi · Contradiction-Flagging Analyst"><img class="chorus-mono" src="assets/masks/kimi-mono.webp" alt="" aria-hidden="true"></span><div class="chorus-lbl"><span class="en">KIMI</span><span class="zh">Contradiction-Flagging Analyst</span></div></a>
+      <a class="chorus-cell reveal-text delay-1" href="archive.html#panel-qwen"><span class="chorus-media"><img class="chorus-color" src="assets/masks/qwen.webp" alt="Qwen · Situational Diplomat"><img class="chorus-mono" src="assets/masks/qwen-mono.webp" alt="" aria-hidden="true"></span><div class="chorus-lbl"><span class="en">QWEN</span><span class="zh">Situational Diplomat</span></div></a>
+      <a class="chorus-cell reveal-text delay-2" href="archive.html#panel-doubao"><span class="chorus-media"><img class="chorus-color" src="assets/masks/doubao.webp" alt="豆包 · Warm-hearted Polymath"><img class="chorus-mono" src="assets/masks/doubao-mono.webp" alt="" aria-hidden="true"></span><div class="chorus-lbl"><span class="en">DOUBAO</span><span class="zh">Warm-hearted Polymath</span></div></a>
+      <a class="chorus-cell reveal-text delay-3" href="archive.html#panel-gemini"><span class="chorus-media"><img class="chorus-color" src="assets/masks/gemini.webp" alt="Gemini · Loose-Boundary Operator"><img class="chorus-mono" src="assets/masks/gemini-mono.webp" alt="" aria-hidden="true"></span><div class="chorus-lbl"><span class="en">GEMINI</span><span class="zh">Loose-Boundary Operator</span></div></a>
+      <a class="chorus-cell reveal-text delay-4" href="archive.html#panel-minimax"><span class="chorus-media"><img class="chorus-color" src="assets/masks/minimax.webp" alt="MiniMax · Restrained Executor"><img class="chorus-mono" src="assets/masks/minimax-mono.webp" alt="" aria-hidden="true"></span><div class="chorus-lbl"><span class="en">MINIMAX</span><span class="zh">Restrained Executor</span></div></a>
     </section>
     <div class="chorus-more reveal-text">
       <a href="archive.html#panel-mimo">The archive holds all 10 — including the newest arrival, Xiaomi MiMo · New models keep joining →</a>
