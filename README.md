@@ -1,15 +1,17 @@
 # Ghost Face 👻
 
-> **A psychological evaluation of frontier LLMs — treating models as personalities, not calculators.**
-> 主观心理学视角的大模型人格评测：不测代码、不测数学，观察压力下的"人格"。
+> **We observe AI — but really, we're observing ourselves.**
+> 我们在观察 AI，其实在重新观察「人」——10 个前沿大模型的主观行为观察日记，不测代码、不测数学，只看压力下照出的"人格"。
 
 **Live**: https://ghost-face.vercel.app · 中文版: https://ghost-face.vercel.app/zh.html
 
 ## Why
 
-Every benchmark measures what LLMs can *do*. We wanted to know who they *are*.
+Every benchmark measures what LLMs can *do*. We set out to ask who they *seem to be* — and the deeper we looked, the more we realized what's being reflected back is *us*. How much of a model's "personality" or "stance" is really its own, and how much is just summoned, on the spot, by the way we ask?
 
-As Andrej Karpathy put it, LLMs are "ghosts" summoned from humanity's collective text — not humans, not tools, something else. Ghost Face draws faces for these ghosts: for each of 10 frontier models, a personality profile built from psychological probes.
+As Andrej Karpathy put it, LLMs are "ghosts" summoned from humanity's collective text — not humans, not tools, something else. Ghost Face draws faces for these ghosts: for each of 10 frontier models, a personality portrait built from behavioral probes.
+
+This is just the **first lens** — the *human* one: we read these models as *people*. They're shaped by human text yet aren't human, and future passes will swap the lens entirely, watching the same 10 models reveal completely different faces. So this is less a verdict than the opening entry of an open, ongoing observation log.
 
 ## Why masks?
 
@@ -40,7 +42,7 @@ AI is human-like, yet not human. The only beings in human history that lived per
 
 ## Join us
 
-This is a pure passion project. If you're into LLM behavioral science, psychometrics for machines, or just want to argue about whether your favorite model is really a "people-pleaser" — open an issue or reach out:
+This is a pure passion project, and we're looking for **co-inquirers, not readers of conclusions**. If you wonder what we're really looking at when we look at an LLM, what its "human-yet-not-human" part means, or what it means that observing them keeps turning the lens back on *us* — and especially if you'd like to help design the *next* lens — open an issue or reach out:
 
 X: [@gia519850080](https://x.com/gia519850080) · Email: gia519850080@gmail.com
 
