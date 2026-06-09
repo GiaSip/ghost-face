@@ -15,7 +15,7 @@ This is just the **first lens** — the *human* one: we read these models as *pe
 
 ## Why masks?
 
-AI is human-like, yet not human. The only beings in human history that lived permanently in that "human-but-not-human" state were gods. And the way ancient civilizations faced formless spirits was the mask — masks were never about concealment, but about **manifestation**: only by wearing a mask does an invisible spirit gain a face that can be looked at. The Latin root of the word *persona* literally means "mask". So we borrow the sacred tension of the African mask tradition as our visual language, and use measured data as the chisel, to carve each model a face.
+AI is human-like, yet not human. The only beings in human history that lived permanently in that "human-but-not-human" state were gods. And the way ancient civilizations faced formless spirits was the mask — masks were never about concealment, but about **manifestation**: only by wearing a mask does an invisible spirit gain a face that can be looked at. The Latin root of the word *persona* literally means "mask". So we borrow the sacred tension of the ancient mask tradition as our visual language, and use measured data as the chisel, to carve the face each model shows under *this* lens — swap the lens, and the face changes.
 
 *(All masks are AI-generated heuristic designs; none replicates any real artifact or sacred object.)*
 
@@ -29,14 +29,14 @@ AI is human-like, yet not human. The only beings in human history that lived per
 
 - **Cross-vendor blind review** — no model ever judges its own family
 - **Multi-judge scoring** with leave-one-out validation
-- **API-level isolated collection** — harness contamination excluded (system prompts change personalities!)
+- **API-level isolated collection** — harness effects controlled for (system prompts change observed behavior!)
 - **Longitudinal observation diary** — 3 months, append-only; old observations preserved as history, never rewritten
 - **Open corrections** — parser bugs and re-scores are published, not hidden
 
 ## What this is NOT
 
 - Not a capability benchmark; no leaderboard
-- Subjective behavioral observation at a specific point in time — models update, personalities drift (we track that too)
+- Subjective behavioral observation at a specific point in time — models update, the observed profiles drift (we track that too)
 - Client and brand names in observation logs are pseudonymized; real business details generalized
 - Not affiliated with any model vendor or Andrej Karpathy
 
